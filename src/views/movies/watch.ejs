@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/player.css">
+</head>
+<body class="player-body">
+
+<div id="playerWrap" class="player-wrap">
+
+  <!-- Top bar -->
+  <div class="player-top" id="playerTop">
+    <a href="/movies/<%= movie.id %>" class="player-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      <span><%= movie.title %></span>
+    </a>
+    <div class="player-title-center"><%= movie.title %></div>
+  </div>
+
+  <!-- Video / Embed -->
+  <% const isYouTube = movie.video_url && (movie.video_url.includes('youtube.com') || movie.video_url.includes('youtu.be')); %>
+  <% if (isYouTube) { %>
+    <%
+      let ytId = '';
+      const m1 = movie.video_url.match(/[?&]v=([^&]+)/);
+      const m2 = movie.video_url.match(/youtu\.be\/([^?]+)/);
+      if (m1) ytId = m1[1]; else if (m2) ytId = m2[1];
+    %>
+    <iframe class="yt-iframe"
+            src="https://www.youtube.com/embed/<%= ytId %>?autoplay=1&rel=0&modestbranding=1"
+            frameborder="0"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowfullscreen></iframe>
+  <% } else if (movie.video_url) { %>
+    <video id="mainVideo" class="main-video"
+           src="<%= movie.video_url %>"
+           autoplay
+           playsinline></video>
+  <% } else { %>
+    <div class="no-video">
+      <img src="<%= movie.banner || movie.thumbnail || '/images/placeholder.svg' %>"
+           alt="<%= movie.title %>"
+           onerror="this.src='/images/placeholder.svg'">
+      <div class="no-video-overlay">
+        <svg viewBox="0 0 24 24" fill="white" width="72" height="72"><polygon points="5 3 19 12 5 21"/></svg>
+        <p>Video not available</p>
+        <small>Add a video URL in the admin panel to enable playback</small>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Controls (only for native video) -->
+  <% if (!isYouTube && movie.video_url) { %>
+  <div class="player-controls" id="playerControls">
+    <!-- Progress -->
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-thumb" id="progressThumb"></div>
+      </div>
+      <div class="time-row">
+        <span id="currentTime">0:00</span>
+        <span id="totalTime">--:--</span>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="ctrl-row">
+      <div class="ctrl-left">
+        <button id="playBtn" class="ctrl-btn" title="Play/Pause">
+          <svg id="playIco" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21"/></svg>
+          <svg id="pauseIco" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        </button>
+        <button id="skipBackBtn" class="ctrl-btn" title="-10s">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+          <span class="skip-n">10</span>
+        </button>
+        <button id="skipFwdBtn" class="ctrl-btn" title="+10s">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="transform:scaleX(-1)"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+          <span class="skip-n">10</span>
+        </button>
+        <div class="vol-wrap">
+          <button id="muteBtn" class="ctrl-btn" title="Mute">
+            <svg id="volHigh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            <svg id="volMute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+          </button>
+          <input type="range" id="volSlider" class="vol-slider" min="0" max="1" step="0.05" value="1">
+        </div>
+        <div class="player-movie-title"><%= movie.title %></div>
+      </div>
+      <div class="ctrl-right">
+        <button class="ctrl-btn" title="Subtitles">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><path d="M17 12H7M15 16H7"/></svg>
+        </button>
+        <button class="ctrl-btn" title="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button id="fsBtn" class="ctrl-btn" title="Fullscreen">
+          <svg id="fsIn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+          <svg id="fsOut" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <% } %>
+
+</div>
+
+<script src="/js/player.js"></script>
+</body>
+</html>

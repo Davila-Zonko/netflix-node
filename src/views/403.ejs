@@ -1,0 +1,12 @@
+<%- include('./layouts/header', { title: '403 – Netflix', showNav: !!locals.user }) %>
+
+<div class="error-page">
+  <div class="error-inner">
+    <h1 class="error-code">403</h1>
+    <h2>Access Denied</h2>
+    <p>You don't have permission to view this page.</p>
+    <a href="/" class="btn-play">Go Home</a>
+  </div>
+</div>
+
+<%- include('./layouts/footer') %>

@@ -1,0 +1,36 @@
+<%- include('./layouts/header', { title }) %>
+
+<main class="browse-page container">
+  <h1 class="search-heading">
+    <% if (query) { %>Search results for "<%= query %>"<% } else { %>Search<% } %>
+  </h1>
+
+  <% if (query && !results.length) { %>
+    <div class="no-results">
+      <h2>No results for "<em><%= query %></em>"</h2>
+      <p>Suggestions: Try different keywords, a movie title, an actor or a director.</p>
+    </div>
+  <% } else if (!query) { %>
+    <p class="search-prompt">Type something in the search bar above to find titles.</p>
+  <% } else { %>
+    <div class="grid-view">
+      <% results.forEach(m => { %>
+      <a href="/movies/<%= m.id %>" class="grid-card">
+        <img src="<%= m.thumbnail || '/images/placeholder.svg' %>"
+             alt="<%= m.title %>"
+             loading="lazy"
+             onerror="this.src='/images/placeholder.svg'">
+        <div class="grid-overlay">
+          <h3><%= m.title %></h3>
+          <div class="grid-meta">
+            <span><%= m.release_year %></span>
+            <span><%= parseFloat(m.rating || 0).toFixed(1) %> ★</span>
+          </div>
+        </div>
+      </a>
+      <% }) %>
+    </div>
+  <% } %>
+</main>
+
+<%- include('./layouts/footer') %>

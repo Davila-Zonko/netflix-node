@@ -1,0 +1,45 @@
+<div class="movie-card"
+     data-id="<%= movie.id %>"
+     data-title="<%= movie.title.replace(/"/g, '&quot;') %>"
+     data-desc="<%= (movie.description || '').substring(0,280).replace(/"/g, '&quot;') %>"
+     data-year="<%= movie.release_year %>"
+     data-duration="<%= movie.duration %>"
+     data-genre="<%= (movie.genre || '').replace(/"/g, '&quot;') %>"
+     data-cast="<%= (movie.cast_members || '').replace(/"/g, '&quot;') %>"
+     data-director="<%= (movie.director || '').replace(/"/g, '&quot;') %>"
+     data-banner="<%= movie.banner || movie.thumbnail || '' %>"
+     onclick="openModal(this)">
+
+  <div class="card-thumb">
+    <img
+      src="<%= movie.thumbnail || '/images/placeholder.svg' %>"
+      alt="<%= movie.title %>"
+      loading="lazy"
+      onerror="this.src='/images/placeholder.svg'">
+
+    <div class="card-overlay">
+      <div class="card-actions">
+        <a href="/movies/<%= movie.id %>/watch"
+           class="card-play-btn" onclick="event.stopPropagation()" title="Play">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21"/></svg>
+        </a>
+        <button class="card-icon-btn"
+                onclick="event.stopPropagation(); quickList(this, <%= movie.id %>)"
+                title="Add to My List" data-in-list="0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <button class="card-icon-btn card-more"
+                onclick="event.stopPropagation(); openModal(this.closest('.movie-card'))"
+                title="More Info">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
+      <div class="card-meta">
+        <span class="match">98% Match</span>
+        <span class="card-year"><%= movie.release_year %></span>
+        <span class="hd-tag">HD</span>
+      </div>
+      <p class="card-genres"><%= (movie.genre || '').split(',').slice(0,2).map(g => g.trim()).join(' · ') %></p>
+    </div>
+  </div>
+</div>

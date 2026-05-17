@@ -1,0 +1,47 @@
+<%- include('../layouts/header', { title }) %>
+
+<main class="browse-page container">
+  <div class="page-header">
+    <h1><%= pageTitle %></h1>
+    <div class="filters">
+      <select class="filter-sel" onchange="location.href='/movies/browse?genre='+this.value">
+        <option value="">All Genres</option>
+        <% genres.forEach(g => { %>
+          <option value="<%= g %>" <%= (query && query.genre === g) ? 'selected' : '' %>><%= g %></option>
+        <% }) %>
+      </select>
+      <select class="filter-sel" onchange="location.href='/movies/browse?type='+this.value">
+        <option value="">All Types</option>
+        <option value="movie"  <%= (query && query.type === 'movie')  ? 'selected' : '' %>>Movies</option>
+        <option value="series" <%= (query && query.type === 'series') ? 'selected' : '' %>>TV Shows</option>
+      </select>
+    </div>
+  </div>
+
+  <% if (!movies.length) { %>
+    <div class="empty-state">
+      <p>No titles found.</p>
+      <a href="/movies/browse" class="btn-play sm">Browse All</a>
+    </div>
+  <% } else { %>
+  <div class="grid-view">
+    <% movies.forEach(m => { %>
+    <a href="/movies/<%= m.id %>" class="grid-card">
+      <img src="<%= m.thumbnail || '/images/placeholder.svg' %>"
+           alt="<%= m.title %>"
+           loading="lazy"
+           onerror="this.src='/images/placeholder.svg'">
+      <div class="grid-overlay">
+        <h3><%= m.title %></h3>
+        <div class="grid-meta">
+          <span><%= m.release_year %></span>
+          <span><%= parseFloat(m.rating || 0).toFixed(1) %> ★</span>
+        </div>
+      </div>
+    </a>
+    <% }) %>
+  </div>
+  <% } %>
+</main>
+
+<%- include('../layouts/footer') %>

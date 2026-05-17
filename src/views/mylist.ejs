@@ -1,0 +1,50 @@
+<%- include('./layouts/header', { title }) %>
+
+<main class="browse-page container">
+  <h1>My List</h1>
+
+  <% if (!myList.length) { %>
+    <div class="empty-state">
+      <p>Your list is empty. Add titles you want to watch.</p>
+      <a href="/" class="btn-play sm">Explore Netflix</a>
+    </div>
+  <% } else { %>
+    <div class="grid-view">
+      <% myList.forEach(m => { %>
+      <div class="grid-card-wrap">
+        <a href="/movies/<%= m.id %>" class="grid-card">
+          <img src="<%= m.thumbnail || '/images/placeholder.svg' %>"
+               alt="<%= m.title %>"
+               loading="lazy"
+               onerror="this.src='/images/placeholder.svg'">
+          <div class="grid-overlay">
+            <h3><%= m.title %></h3>
+            <div class="grid-meta">
+              <span><%= m.release_year %></span>
+              <span><%= parseFloat(m.rating || 0).toFixed(1) %> ★</span>
+            </div>
+          </div>
+        </a>
+        <button class="remove-btn" onclick="removeFromList(<%= m.id %>, this)" title="Remove">✕</button>
+      </div>
+      <% }) %>
+    </div>
+  <% } %>
+</main>
+
+<%- include('./layouts/footer') %>
+
+<script>
+async function removeFromList(id, btn) {
+  const r = await fetch('/list/remove', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'movie_id=' + id
+  });
+  const d = await r.json();
+  if (d.success) {
+    btn.closest('.grid-card-wrap').remove();
+    showToast('Removed from My List');
+  }
+}
+</script>

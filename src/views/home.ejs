@@ -1,0 +1,112 @@
+<%- include('./layouts/header', { title }) %>
+
+<!-- ═══ HERO ═══ -->
+<% if (featured) { %>
+<section class="hero" style="background-image:
+  linear-gradient(to right, rgba(0,0,0,.85) 0%, rgba(0,0,0,.35) 55%, transparent 100%),
+  linear-gradient(to top, rgba(0,0,0,.7) 0%, transparent 40%),
+  url('<%= featured.banner || featured.thumbnail %>');
+  background-size: cover; background-position: center top;">
+
+  <div class="hero-content">
+    <h1 class="hero-title"><%= featured.title %></h1>
+    <div class="hero-meta">
+      <span class="match">98% Match</span>
+      <span><%= featured.release_year %></span>
+      <span class="badge-outline">TV-MA</span>
+      <% if (featured.duration) { %><span><%= featured.duration %> min</span><% } %>
+      <span class="badge-hd">HD</span>
+    </div>
+    <p class="hero-desc"><%= (featured.description || '').substring(0, 200) %>...</p>
+    <div class="hero-btns">
+      <a href="/movies/<%= featured.id %>/watch" class="btn-play">
+        <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21"/></svg>
+        Play
+      </a>
+      <a href="/movies/<%= featured.id %>" class="btn-info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        More Info
+      </a>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- ═══ ROWS ═══ -->
+<main class="browse-wrap">
+
+  <!-- Trending Now -->
+  <% if (trending.length) { %>
+  <%- include('./partials/row', { label: 'Trending Now', rowId: 'trending', movies: trending }) %>
+  <% } %>
+
+  <!-- My List -->
+  <% if (myList.length) { %>
+  <%- include('./partials/row', { label: 'My List', rowId: 'mylist', movies: myList }) %>
+  <% } %>
+
+  <!-- New Releases -->
+  <% if (newReleases.length) { %>
+  <%- include('./partials/row', { label: 'New Releases', rowId: 'new', movies: newReleases }) %>
+  <% } %>
+
+  <!-- Top Rated -->
+  <% if (topRated.length) { %>
+  <%- include('./partials/row', { label: 'Top Rated', rowId: 'toprated', movies: topRated }) %>
+  <% } %>
+
+  <!-- By Genre -->
+  <% Object.entries(byGenre).forEach(([genre, gmovies]) => { %>
+    <% if (gmovies.length) { %>
+    <%- include('./partials/row', {
+          label:  genre,
+          rowId:  'genre-' + genre.toLowerCase().replace(/\W+/g, '-'),
+          movies: gmovies,
+          href:   '/movies/browse?genre=' + encodeURIComponent(genre)
+        }) %>
+    <% } %>
+  <% }) %>
+
+</main>
+
+<!-- ═══ MODAL ═══ -->
+<div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-backdrop" onclick="closeModal()"></div>
+  <div class="modal-panel">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="modal-banner" id="modalBanner"></div>
+    <div class="modal-body">
+      <div class="modal-actions">
+        <a id="modalPlay" href="#" class="btn-play sm">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21"/></svg>
+          Play
+        </a>
+        <button id="modalListBtn" class="icon-circle" onclick="modalToggleList()" title="My List">
+          <svg id="modalListIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <button class="icon-circle" title="Rate">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+        </button>
+        <a id="modalMoreInfo" href="#" class="modal-more-link">More Info</a>
+      </div>
+      <div class="modal-meta">
+        <span class="match">98% Match</span>
+        <span id="modalYear"></span>
+        <span class="badge-hd">HD</span>
+        <span id="modalDuration"></span>
+      </div>
+      <div class="modal-grid">
+        <p id="modalDesc" class="modal-desc"></p>
+        <div class="modal-details">
+          <p><span class="det-label">Cast:</span> <span id="modalCast"></span></p>
+          <p><span class="det-label">Genres:</span> <span id="modalGenre"></span></p>
+          <p><span class="det-label">Director:</span> <span id="modalDirector"></span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('./layouts/footer') %>

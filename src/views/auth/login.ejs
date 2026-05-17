@@ -1,0 +1,52 @@
+<%- include('../layouts/header', { title, showNav: false }) %>
+
+<div class="auth-page">
+  <div class="auth-bg"></div>
+
+  <header class="auth-header">
+    <a href="/auth/login"><%- include('../partials/logo') %></a>
+  </header>
+
+  <main class="auth-main">
+    <div class="auth-box">
+      <h1>Sign In</h1>
+
+      <% if (error_msg && error_msg.length) { %>
+        <div class="auth-alert"><%= error_msg %></div>
+      <% } %>
+
+
+      <form action="/auth/login" method="POST" class="auth-form" novalidate>
+        <div class="field-wrap">
+          <input type="email" name="email" id="email" placeholder=" " autocomplete="email" required>
+          <label for="email">Email</label>
+        </div>
+        <div class="field-wrap">
+          <input type="password" name="password" id="password" placeholder=" " autocomplete="current-password" required>
+          <label for="password">Password</label>
+          <button type="button" class="show-pass" onclick="togglePass('password', this)">SHOW</button>
+        </div>
+        <button type="submit" class="btn-primary full">Sign In</button>
+        <div class="auth-row">
+          <label class="remember"><input type="checkbox" name="remember"> Remember me</label>
+          <a href="#" class="link-muted">Need help?</a>
+        </div>
+      </form>
+
+      <div class="auth-footer">
+        <p>New to Netflix? <a href="/auth/register" class="link-white">Sign up now</a></p>
+        <p class="tiny">This page is protected by Google reCAPTCHA to ensure you're not a bot.</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<%- include('../layouts/footer') %>
+
+<script>
+function togglePass(id, btn) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? 'SHOW' : 'HIDE';
+}
+</script>

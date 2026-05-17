@@ -1,0 +1,62 @@
+<%- include('../layouts/header', { title }) %>
+<% locals.adminPage = 'movies'; %>
+
+<div class="admin-layout">
+  <%- include('../partials/admin-sidebar') %>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <h1>Movies (<%= movies.length %>)</h1>
+      <a href="/admin/movies/create" class="btn-primary sm">+ Add Movie</a>
+    </div>
+
+    <% if (success_msg.length) { %><div class="flash success"><%= success_msg %></div><% } %>
+    <% if (error_msg.length)   { %><div class="flash error"><%= error_msg %></div><% } %>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Thumb</th>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Genre</th>
+            <th>Year</th>
+            <th>Rating</th>
+            <th>Featured</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% movies.forEach(m => { %>
+          <tr>
+            <td class="muted"><%= m.id %></td>
+            <td>
+              <img src="<%= m.thumbnail || '/images/placeholder.svg' %>"
+                   alt=""
+                   style="width:64px;height:40px;object-fit:cover;border-radius:4px;"
+                   onerror="this.src='/images/placeholder.svg'">
+            </td>
+            <td><strong><%= m.title %></strong></td>
+            <td><%= m.type === 'series' ? 'TV Series' : 'Movie' %></td>
+            <td class="muted"><%= (m.genre || '—').substring(0, 30) %></td>
+            <td><%= m.release_year %></td>
+            <td><%= parseFloat(m.rating || 0).toFixed(1) %></td>
+            <td><%= m.featured ? '⭐' : '' %></td>
+            <td>
+              <a href="/admin/movies/<%= m.id %>/edit" class="tbl-link">Edit</a>
+              <form action="/admin/movies/<%= m.id %>/delete" method="POST" style="display:inline"
+                    onsubmit="return confirm('Delete \'<%= m.title.replace(/'/g, \"\\\\'\") %>\'?')">
+                <button type="submit" class="tbl-link danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<%- include('../layouts/footer') %>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title || 'Netflix' %></title>
+  <link rel="icon" href="" type="image/png">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<% if (locals.showNav !== false) { %>
+<!-- ═══ NAVBAR ═══ -->
+<nav class="navbar" id="navbar">
+  <div class="nav-left">
+    <a href="/" class="nav-logo">
+      <%- include('../partials/logo') %>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/"                         class="nav-link">Home</a></li>
+      <li><a href="/movies/browse?type=series" class="nav-link">TV Shows</a></li>
+      <li><a href="/movies/browse?type=movie"  class="nav-link">Movies</a></li>
+      <li><a href="/movies/browse"             class="nav-link">Browse</a></li>
+      <li><a href="/my-list"                   class="nav-link">My List</a></li>
+    </ul>
+  </div>
+
+  <div class="nav-right">
+    <!-- Search -->
+    <div class="nav-search" id="navSearch">
+      <button class="icon-btn" id="searchToggle" aria-label="Search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <input type="text" id="searchInput" class="search-input" placeholder="Titles, people, genres" autocomplete="off">
+    </div>
+
+    <!-- Profile dropdown -->
+    <div class="nav-profile" tabindex="0">
+      <div class="avatar-circle"><%= (user.name || 'U')[0].toUpperCase() %></div>
+      <svg class="caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+
+      <div class="profile-dropdown">
+        <div class="dropdown-user">
+          <div class="avatar-circle sm"><%= (user.name || 'U')[0].toUpperCase() %></div>
+          <div>
+            <strong><%= user.name %></strong>
+            <span class="plan-pill"><%= (user.plan || 'standard').toUpperCase() %></span>
+          </div>
+        </div>
+        <hr class="dropdown-hr">
+        <a href="/my-list"  class="dropdown-link">My List</a>
+        <% if (user.role === 'admin') { %>
+        <a href="/admin"    class="dropdown-link">Admin Panel</a>
+        <% } %>
+        <hr class="dropdown-hr">
+        <form action="/auth/logout" method="POST" style="margin:0">
+          <button type="submit" class="dropdown-link sign-out-btn">Sign Out</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</nav>
+<% } %>

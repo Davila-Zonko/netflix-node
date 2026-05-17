@@ -1,0 +1,129 @@
+<%- include('../layouts/header', { title }) %>
+<% locals.adminPage = 'movies'; %>
+<% const isEdit = !!movie; %>
+
+<div class="admin-layout">
+  <%- include('../partials/admin-sidebar') %>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <h1><%= isEdit ? 'Edit Movie' : 'Add New Movie' %></h1>
+      <a href="/admin/movies" class="btn-outline sm">← Back</a>
+    </div>
+
+    <% if (error_msg.length) { %><div class="flash error"><%= error_msg %></div><% } %>
+
+    <form action="<%= isEdit ? '/admin/movies/' + movie.id : '/admin/movies' %>"
+          method="POST"
+          enctype="multipart/form-data"
+          class="admin-form">
+
+      <div class="form-row">
+        <div class="form-col">
+          <label for="title">Title *</label>
+          <input type="text" name="title" id="title"
+                 value="<%= isEdit ? movie.title : '' %>" required>
+        </div>
+        <div class="form-col">
+          <label for="type">Type *</label>
+          <select name="type" id="type">
+            <option value="movie"  <%= (!isEdit || movie.type === 'movie')  ? 'selected' : '' %>>Movie</option>
+            <option value="series" <%= (isEdit && movie.type === 'series')  ? 'selected' : '' %>>TV Series</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-col full">
+        <label for="description">Description</label>
+        <textarea name="description" id="description" rows="4"><%= isEdit ? movie.description : '' %></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-col">
+          <label for="genre">Genres <small>(comma-separated)</small></label>
+          <input type="text" name="genre" id="genre"
+                 value="<%= isEdit ? movie.genre : '' %>"
+                 placeholder="Action, Drama, Thriller">
+        </div>
+        <div class="form-col">
+          <label for="release_year">Release Year</label>
+          <input type="number" name="release_year" id="release_year"
+                 value="<%= isEdit ? movie.release_year : new Date().getFullYear() %>"
+                 min="1900" max="<%= new Date().getFullYear() + 2 %>">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-col">
+          <label for="duration">Duration (minutes)</label>
+          <input type="number" name="duration" id="duration"
+                 value="<%= isEdit ? movie.duration : '' %>" min="0">
+        </div>
+        <div class="form-col">
+          <label for="rating">Rating (0–10)</label>
+          <input type="number" name="rating" id="rating"
+                 value="<%= isEdit ? movie.rating : '' %>"
+                 min="0" max="10" step="0.1">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-col">
+          <label for="director">Director</label>
+          <input type="text" name="director" id="director"
+                 value="<%= isEdit ? movie.director : '' %>">
+        </div>
+        <div class="form-col">
+          <label for="cast_members">Cast <small>(comma-separated)</small></label>
+          <input type="text" name="cast_members" id="cast_members"
+                 value="<%= isEdit ? movie.cast_members : '' %>">
+        </div>
+      </div>
+
+      <div class="form-col full">
+        <label for="video_url">Video URL <small>(YouTube link or direct .mp4 URL)</small></label>
+        <input type="text" name="video_url" id="video_url"
+               value="<%= isEdit ? movie.video_url : '' %>"
+               placeholder="https://www.youtube.com/watch?v=...">
+      </div>
+
+      <div class="form-row">
+        <div class="form-col">
+          <label>Thumbnail Image</label>
+          <% if (isEdit && movie.thumbnail) { %>
+            <img src="<%= movie.thumbnail %>" alt="Thumbnail"
+                 style="height:60px;border-radius:4px;margin-bottom:8px;"
+                 onerror="this.style.display='none'">
+          <% } %>
+          <input type="file" name="thumbnail" accept="image/*">
+        </div>
+        <div class="form-col">
+          <label>Banner / Hero Image</label>
+          <% if (isEdit && movie.banner) { %>
+            <img src="<%= movie.banner %>" alt="Banner"
+                 style="height:60px;border-radius:4px;margin-bottom:8px;"
+                 onerror="this.style.display='none'">
+          <% } %>
+          <input type="file" name="banner" accept="image/*">
+        </div>
+      </div>
+
+      <div class="form-check-row">
+        <label class="check-label">
+          <input type="checkbox" name="featured" value="1"
+                 <%= (isEdit && movie.featured) ? 'checked' : '' %>>
+          Feature this title on the homepage hero
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">
+          <%= isEdit ? 'Save Changes' : 'Add Movie' %>
+        </button>
+        <a href="/admin/movies" class="btn-outline">Cancel</a>
+      </div>
+    </form>
+  </main>
+</div>
+
+<%- include('../layouts/footer') %>

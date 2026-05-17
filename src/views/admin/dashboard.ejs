@@ -1,0 +1,93 @@
+<%- include('../layouts/header', { title }) %>
+<% locals.adminPage = 'dashboard'; %>
+
+<div class="admin-layout">
+  <%- include('../partials/admin-sidebar') %>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <h1>Dashboard</h1>
+      <span class="admin-greeting">Welcome back, <%= user.name %></span>
+    </div>
+
+    <% if (success_msg.length) { %><div class="flash success"><%= success_msg %></div><% } %>
+    <% if (error_msg.length)   { %><div class="flash error"><%= error_msg %></div><% } %>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-ico">🎬</div>
+        <div><span class="stat-num"><%= totalMovies %></span><span class="stat-lbl">Movies</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-ico">👥</div>
+        <div><span class="stat-num"><%= totalUsers %></span><span class="stat-lbl">Users</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-ico">💰</div>
+        <div><span class="stat-num">$<%= (totalUsers * 15.49).toFixed(0) %></span><span class="stat-lbl">Est. Revenue/mo</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-ico">✅</div>
+        <div><span class="stat-num"><%= totalUsers %></span><span class="stat-lbl">Active Subs</span></div>
+      </div>
+    </div>
+
+    <!-- Recent Movies -->
+    <div class="admin-section">
+      <div class="section-hdr">
+        <h2>Recent Movies</h2>
+        <a href="/admin/movies/create" class="btn-primary sm">+ Add Movie</a>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Title</th><th>Type</th><th>Year</th><th>Rating</th><th>Actions</th></tr></thead>
+          <tbody>
+            <% recentMovies.forEach(m => { %>
+            <tr>
+              <td><strong><%= m.title %></strong></td>
+              <td><%= m.type %></td>
+              <td><%= m.release_year %></td>
+              <td><%= parseFloat(m.rating || 0).toFixed(1) %></td>
+              <td>
+                <a href="/admin/movies/<%= m.id %>/edit" class="tbl-link">Edit</a>
+                <form action="/admin/movies/<%= m.id %>/delete" method="POST" style="display:inline"
+                      onsubmit="return confirm('Delete this movie?')">
+                  <button type="submit" class="tbl-link danger">Delete</button>
+                </form>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <a href="/admin/movies" class="see-all-link">See all movies →</a>
+    </div>
+
+    <!-- Recent Users -->
+    <div class="admin-section">
+      <div class="section-hdr">
+        <h2>Users</h2>
+        <a href="/admin/users" class="btn-outline sm">Manage</a>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Email</th><th>Plan</th><th>Role</th><th>Joined</th></tr></thead>
+          <tbody>
+            <% users.forEach(u => { %>
+            <tr>
+              <td><%= u.name %></td>
+              <td><%= u.email %></td>
+              <td><span class="plan-pill"><%= (u.plan || '').toUpperCase() %></span></td>
+              <td><%= u.role %></td>
+              <td><%= new Date(u.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) %></td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<%- include('../layouts/footer') %>

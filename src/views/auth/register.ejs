@@ -1,0 +1,96 @@
+<%- include('../layouts/header', { title, showNav: false }) %>
+
+<div class="auth-page">
+  <div class="auth-bg"></div>
+
+  <header class="auth-header">
+    <a href="/auth/login"><%- include('../partials/logo') %></a>
+    <a href="/auth/login" class="btn-sm-outline">Sign In</a>
+  </header>
+
+  <main class="auth-main">
+    <div class="auth-box wide">
+      <h1>Create your account</h1>
+      <p class="auth-subtitle">Just a few more steps and you're done!</p>
+
+      <% if (error_msg && error_msg.length) { %>
+        <div class="auth-alert"><%= error_msg %></div>
+      <% } %>
+
+
+      <form action="/auth/register" method="POST" class="auth-form" novalidate>
+        <div class="field-wrap">
+          <input type="text" name="name" id="name" placeholder=" " autocomplete="name" required>
+          <label for="name">Full Name</label>
+        </div>
+        <div class="field-wrap">
+          <input type="email" name="email" id="email" placeholder=" " autocomplete="email" required>
+          <label for="email">Email</label>
+        </div>
+        <div class="field-wrap">
+          <input type="password" name="password" id="password" placeholder=" " autocomplete="new-password" required>
+          <label for="password">Add a password</label>
+          <button type="button" class="show-pass" onclick="togglePass('password', this)">SHOW</button>
+        </div>
+        <div class="field-wrap">
+          <input type="password" name="confirm_password" id="confirm_password" placeholder=" " required>
+          <label for="confirm_password">Confirm password</label>
+          <button type="button" class="show-pass" onclick="togglePass('confirm_password', this)">SHOW</button>
+        </div>
+
+        <!-- Plan selector -->
+        <div class="plan-section">
+          <p class="plan-title">Choose your plan:</p>
+          <div class="plan-grid">
+            <label class="plan-card">
+              <input type="radio" name="plan" value="basic">
+              <div class="plan-inner">
+                <span class="plan-name">Basic</span>
+                <span class="plan-price">$6.99/mo</span>
+                <span class="plan-res">720p</span>
+              </div>
+            </label>
+            <label class="plan-card">
+              <input type="radio" name="plan" value="standard" checked>
+              <div class="plan-inner featured">
+                <span class="plan-badge">Best Value</span>
+                <span class="plan-name">Standard</span>
+                <span class="plan-price">$15.49/mo</span>
+                <span class="plan-res">1080p</span>
+              </div>
+            </label>
+            <label class="plan-card">
+              <input type="radio" name="plan" value="premium">
+              <div class="plan-inner">
+                <span class="plan-name">Premium</span>
+                <span class="plan-price">$22.99/mo</span>
+                <span class="plan-res">4K + HDR</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary full">Get Started</button>
+        <p class="tiny center">
+          By signing up, you agree to our
+          <a href="#" class="link-muted">Terms of Use</a> and
+          <a href="#" class="link-muted">Privacy Statement</a>.
+        </p>
+      </form>
+
+      <div class="auth-footer">
+        <p>Already have an account? <a href="/auth/login" class="link-white">Sign in</a></p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<%- include('../layouts/footer') %>
+
+<script>
+function togglePass(id, btn) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? 'SHOW' : 'HIDE';
+}
+</script>

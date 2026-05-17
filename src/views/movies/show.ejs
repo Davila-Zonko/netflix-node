@@ -1,0 +1,126 @@
+<%- include('../layouts/header', { title }) %>
+
+<div class="movie-detail">
+  <!-- Banner -->
+  <div class="detail-banner" style="background-image:
+    linear-gradient(to right, rgba(0,0,0,.92) 35%, rgba(0,0,0,.3) 100%),
+    linear-gradient(to top, #141414 0%, transparent 30%),
+    url('<%= movie.banner || movie.thumbnail %>');
+    background-size: cover; background-position: center top;">
+    <div class="detail-content">
+      <h1><%= movie.title %></h1>
+      <div class="detail-meta">
+        <span class="match">98% Match</span>
+        <span><%= movie.release_year %></span>
+        <span class="badge-outline">TV-MA</span>
+        <% if (movie.duration) { %><span><%= movie.duration %> min</span><% } %>
+        <span class="badge-hd">HD</span>
+      </div>
+      <p class="detail-desc"><%= movie.description %></p>
+      <div class="detail-btns">
+        <a href="/movies/<%= movie.id %>/watch" class="btn-play">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21"/></svg>
+          Play
+        </a>
+        <button id="listBtn"
+                class="btn-list-toggle <%= inMyList ? 'active' : '' %>"
+                onclick="toggleDetail(<%= movie.id %>, this)">
+          <% if (inMyList) { %>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>In My List</span>
+          <% } else { %>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>My List</span>
+          <% } %>
+        </button>
+        <button class="icon-circle" title="Rate">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Section -->
+  <div class="detail-info container">
+    <div class="detail-grid">
+      <div class="detail-left">
+        <% if (movie.rating) { %>
+          <div class="rating-row">
+            <% for (let i = 1; i <= 10; i++) { %>
+              <span class="star <%= i <= Math.round(movie.rating) ? 'on' : '' %>">★</span>
+            <% } %>
+            <span class="rating-num"><%= parseFloat(movie.rating).toFixed(1) %>/10</span>
+          </div>
+        <% } %>
+        <p class="detail-full-desc"><%= movie.description %></p>
+      </div>
+      <div class="detail-right">
+        <% if (movie.cast_members) { %>
+          <p class="detail-attr"><span class="det-label">Cast:</span> <%= movie.cast_members %></p>
+        <% } %>
+        <% if (movie.director) { %>
+          <p class="detail-attr"><span class="det-label">Director:</span> <%= movie.director %></p>
+        <% } %>
+        <% if (movie.genre) { %>
+          <p class="detail-attr">
+            <span class="det-label">Genres:</span>
+            <% movie.genre.split(',').forEach(g => { %>
+              <a href="/movies/browse?genre=<%= encodeURIComponent(g.trim()) %>" class="genre-tag"><%= g.trim() %></a>
+            <% }) %>
+          </p>
+        <% } %>
+        <p class="detail-attr"><span class="det-label">Type:</span> <%= movie.type === 'series' ? 'TV Series' : 'Movie' %></p>
+        <p class="detail-attr"><span class="det-label">Year:</span> <%= movie.release_year %></p>
+        <% if (movie.duration) { %>
+          <p class="detail-attr"><span class="det-label">Duration:</span> <%= movie.duration %> min</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- More Like This -->
+  <% if (similar.length) { %>
+  <section class="similar-section container">
+    <h2>More Like This</h2>
+    <div class="similar-grid">
+      <% similar.forEach(m => { %>
+      <a href="/movies/<%= m.id %>" class="similar-card">
+        <img src="<%= m.thumbnail || '/images/placeholder.svg' %>"
+             alt="<%= m.title %>"
+             loading="lazy"
+             onerror="this.src='/images/placeholder.svg'">
+        <div class="similar-info">
+          <div class="similar-meta">
+            <span class="match">97%</span>
+            <span><%= m.release_year %></span>
+          </div>
+          <p><%= (m.description || '').substring(0, 100) %>...</p>
+        </div>
+      </a>
+      <% }) %>
+    </div>
+  </section>
+  <% } %>
+</div>
+
+<%- include('../layouts/footer') %>
+
+<script>
+async function toggleDetail(movieId, btn) {
+  const active = btn.classList.contains('active');
+  const url = active ? '/list/remove' : '/list/add';
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'movie_id=' + movieId
+  });
+  const d = await r.json();
+  if (d.success) {
+    btn.classList.toggle('active');
+    btn.innerHTML = btn.classList.contains('active')
+      ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>In My List</span>`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>My List</span>`;
+    showToast(btn.classList.contains('active') ? 'Added to My List' : 'Removed from My List');
+  }
+}
+</script>

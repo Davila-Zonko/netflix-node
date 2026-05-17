@@ -1,0 +1,47 @@
+<%- include('../layouts/header', { title }) %>
+<% locals.adminPage = 'users'; %>
+
+<div class="admin-layout">
+  <%- include('../partials/admin-sidebar') %>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <h1>Users (<%= users.length %>)</h1>
+    </div>
+
+    <% if (success_msg.length) { %><div class="flash success"><%= success_msg %></div><% } %>
+    <% if (error_msg.length)   { %><div class="flash error"><%= error_msg %></div><% } %>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>ID</th><th>Name</th><th>Email</th><th>Plan</th><th>Role</th><th>Joined</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          <% users.forEach(u => { %>
+          <tr class="<%= u.id === user.id ? 'current-row' : '' %>">
+            <td class="muted"><%= u.id %></td>
+            <td><strong><%= u.name %></strong></td>
+            <td><%= u.email %></td>
+            <td><span class="plan-pill"><%= (u.plan || '').toUpperCase() %></span></td>
+            <td><%= u.role === 'admin' ? '<strong>Admin</strong>' : 'User' %></td>
+            <td><%= new Date(u.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) %></td>
+            <td>
+              <% if (u.id !== user.id) { %>
+                <form action="/admin/users/<%= u.id %>/delete" method="POST" style="display:inline"
+                      onsubmit="return confirm('Delete user <%= u.name %>?')">
+                  <button type="submit" class="tbl-link danger">Delete</button>
+                </form>
+              <% } else { %>
+                <span class="you-tag">You</span>
+              <% } %>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<%- include('../layouts/footer') %>
